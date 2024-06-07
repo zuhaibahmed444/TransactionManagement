@@ -1,10 +1,10 @@
 export interface Transaction {
     id: string;
-    date: number;
-    Comments: string;
+    date: string;
+    comments: string;
     sender: any;
     recipient: any;
-    Amount:number;
-    CurrencyCd: string;
+    amount:number;
+    currencyCd: string;
     status:string;
 }

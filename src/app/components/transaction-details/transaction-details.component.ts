@@ -14,47 +14,40 @@ export class TransactionDetailsComponent implements OnInit , AfterViewInit {
 
   transaction: Transaction ;
   transactionForm: FormGroup;
+  error: any;
 
   constructor(
     private route: ActivatedRoute,
     public router: Router,
     private fb: FormBuilder,
-    private transactionService: TransactionsService
+    private transactionService: TransactionsService,
   ) {}
 
   ngOnInit() {
     const id = +this.route.snapshot.paramMap.get('id')!;
-    this.transactionService.getTransactions().subscribe(transactions => {
+    this.transactionService.fetchTransactionById(id).subscribe(transactions => {
       this.transaction = transactions.find(t => t.id === id.toString())!;
+      this.error = null;
       this.transactionForm = this.fb.group({
         id: [{ value: this.transaction.id, disabled: true }],
-        date: [{ value: this.convertTimeStampToDate(this.transaction.date), disabled: true}],
-        comments: [this.transaction.Comments, [Validators.required, Validators.pattern('^[a-zA-Z0-9 ]+$')]]
+        date: [{ value: new Date(this.transaction.date).toLocaleDateString(), disabled: true}],
+        comments: [this.transaction.comments, [Validators.required, Validators.pattern('^[a-zA-Z0-9 ]+$')]]
       });
+    },error => {
+      this.error = error.message;
     });
   }
 
   save() {
     if (this.transactionForm.valid) {
-      const updatedTransaction: Transaction = {
-        id: this.transaction.id,
-        date: this.transaction.date,
-        Comments: this.transactionForm.get('comments')?.value,
-        sender : this.transaction.sender,
-        recipient: this.transaction.recipient,
-        status: this.transaction.status,
-        Amount: this.transaction.Amount,
-        CurrencyCd: this.transaction.CurrencyCd
-        
-      };
-      this.transactionService.updateTransaction(updatedTransaction);
-      this.router.navigate(['/transaction-list']);
+      const comment = this.transactionForm.get('comments')?.value;
+      const id = +this.route.snapshot.paramMap.get('id')!
+      this.transactionService.updateTransaction(id.toString(),comment).subscribe(updatedTransaction => {
+        this.router.navigate(['/transaction-list']);
+      }, error => {
+        console.log(error)
+      });
     }
-  }
-
-  convertTimeStampToDate(timeStamp: number){
-    const date = new Date(timeStamp);
-    return date.getDate() + '/' +  date.getMonth() + '/' + date.getFullYear()
   }
 
   ngAfterViewInit() {

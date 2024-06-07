@@ -1,0 +1,28 @@
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+  
+  .login-container h2 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .login-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .login-container form mat-form-field {
+    margin-bottom: 10px;
+    width: 100%;
+  }
+  
+  .login-container form button {
+    width: 100%;
+  }
+  
